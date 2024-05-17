@@ -40,7 +40,7 @@ namespace BlakieLibSharp
 
         public bool Overlaps(RectCollider other)
         {
-            if(!ColliderTypeCheck(colliderType, other.colliderType))
+            if (!ColliderTypeCheck(colliderType, other.colliderType))
                 return false;
 
             if (x >= other.x + other.width)
@@ -68,10 +68,12 @@ namespace BlakieLibSharp
 
         public static bool ColliderTypeCheck(ColliderType checker, ColliderType checking)
         {
-            switch(checker)
+            switch (checker)
             {
                 default:
                     return false;
+                case ColliderType.Push:
+                    return checking == ColliderType.Push;
                 case ColliderType.Hurt:
                     return checking == ColliderType.Hit;
                 case ColliderType.Hit:
