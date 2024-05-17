@@ -15,6 +15,35 @@ namespace BlakieLibSharp
             return new Vector2(x + width / 2.0f, y + height / 2.0f);
         }
 
+        public Vector2 GetDistanceFrom(RectCollider other)
+        {
+            return GetDistanceFrom(Vector2.Zero, other, Vector2.Zero);
+        }
+
+        public Vector2 GetDistanceFrom(Vector2 ourPos, RectCollider other, Vector2 otherPos)
+        {
+            float xDistance = -((ourPos.X + x) - (otherPos.X + other.x));
+            float yDistance = -((ourPos.Y + y) - (otherPos.Y + other.y));
+
+            Vector2 rtrn = new Vector2();
+            if (xDistance >= 0)
+                rtrn.X = xDistance + width;
+            else
+                rtrn.X = xDistance - other.width;
+
+            if (yDistance >= 0)
+                rtrn.Y = yDistance + height;
+            else
+                rtrn.Y = yDistance - other.height;
+
+            return rtrn;
+        }
+
+        public bool Overlaps(RectCollider other)
+        {
+            return Overlaps(Vector2.Zero, other, Vector2.Zero);
+        }
+
         public bool Overlaps(Vector2 ourPos, RectCollider other, Vector2 otherPos)
         {
             if (!ColliderTypeCheck(colliderType, other.colliderType))
@@ -43,33 +72,7 @@ namespace BlakieLibSharp
             return true;
         }
 
-        public bool Overlaps(RectCollider other)
-        {
-            if (!ColliderTypeCheck(colliderType, other.colliderType))
-                return false;
-
-            if (x >= other.x + other.width)
-            {
-                return false;
-            }
-
-            if (x + width <= other.x)
-            {
-                return false;
-            }
-
-            if (y >= other.y + other.height)
-            {
-                return false;
-            }
-
-            if (y + height <= other.y)
-            {
-                return false;
-            }
-
-            return true;
-        }
+        
 
         public static bool ColliderTypeCheck(ColliderType checker, ColliderType checking)
         {
