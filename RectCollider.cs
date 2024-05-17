@@ -10,6 +10,11 @@ namespace BlakieLibSharp
         public float width;
         public float height;
 
+        public Vector2 GetCenter()
+        {
+            return new Vector2(x + width / 2.0f, y + height / 2.0f);
+        }
+
         public bool Overlaps(Vector2 ourPos, RectCollider other, Vector2 otherPos)
         {
             if (!ColliderTypeCheck(colliderType, other.colliderType))
