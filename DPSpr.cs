@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Numerics;
 using System.Text;
 
@@ -32,7 +33,7 @@ namespace BlakieLibSharp
 
             int spriteCount = file.ReadInt32();
             int paletteCount = file.ReadInt32();
-            bool compressed = file.ReadBoolean();
+            CompressionType compressed = (CompressionType)file.ReadByte();
 
             int[,] palettes = new int[0,0];
             if (!useBasePal)
@@ -66,7 +67,7 @@ namespace BlakieLibSharp
                 List<byte> pixels = new List<byte>();
                 int bytesRead = 0;
 
-                if (!compressed)
+                if (compressed == CompressionType.None)
                 {
                     if (!sprite.indexed)
                         sprite.imageData = file.ReadBytes(texSize * sizeof(int));
@@ -80,7 +81,7 @@ namespace BlakieLibSharp
                         sprite.imageData = pixels.ToArray();
                     }
                 }
-                else
+                else if(compressed == CompressionType.RLE)
                 {
                     if (useBasePal || !sprite.indexed)
                         texSize *= sizeof(int);
@@ -129,6 +130,19 @@ namespace BlakieLibSharp
                     if (useBasePal)
                         sprite.indexed = false;
                 }
+                else if(compressed == CompressionType.ZLib)
+                {
+                    byte[] data = new byte[sprite.size];
+                    using (ZLibStream stream = new ZLibStream(file.BaseStream, CompressionMode.Decompress))
+                        stream.Read(data);
+                    if (!useBasePal || !sprite.indexed)
+                        pixels.AddRange(data);
+                    else
+                        for(int i = 0; i < data.Length; i++)
+                            pixels.AddRange(BitConverter.GetBytes(palettes[sprite.palNum, data[i]]));
+
+                    sprite.imageData = pixels.ToArray();
+                }
             }
 
 
@@ -176,6 +190,13 @@ namespace BlakieLibSharp
             public unsafe void* imageDataPtr { get { if(imageData.Length > 0) fixed(void* rtrn = &imageData[0]) return rtrn; return null; } }
             public uint glTexId = 0;
             public Sprite() { }
+        }
+
+        public enum CompressionType : byte
+        {
+            None = 0,
+            RLE = 1,
+            ZLib = 2,
         }
     }
 }
