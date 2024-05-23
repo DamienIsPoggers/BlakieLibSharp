@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Numerics;
 using System.Text;
+using ZLibDotNet;
 
 namespace BlakieLibSharp
 {
@@ -132,14 +132,17 @@ namespace BlakieLibSharp
                 }
                 else if(compressed == CompressionType.ZLib)
                 {
-                    byte[] data = new byte[sprite.size];
-                    using (ZLibStream stream = new ZLibStream(file.BaseStream, CompressionMode.Decompress))
-                        stream.Read(data);
-                    if (!useBasePal || !sprite.indexed)
-                        pixels.AddRange(data);
-                    else
-                        for(int i = 0; i < data.Length; i++)
+                    if (!sprite.indexed)
+                        texSize *= sizeof(int);
+                    byte[] data = new byte[texSize];
+                    byte[] compressedData = file.ReadBytes(sprite.size);
+                    ZLib zlib = new ZLib();
+                    zlib.Uncompress(data, out _, compressedData);
+                    if (useBasePal && !sprite.indexed)
+                        for (int i = 0; i < data.Length; i++)
                             pixels.AddRange(BitConverter.GetBytes(palettes[sprite.palNum, data[i]]));
+                    else
+                        pixels.AddRange(data);
 
                     sprite.imageData = pixels.ToArray();
                 }
