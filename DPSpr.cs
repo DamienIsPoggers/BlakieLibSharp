@@ -42,9 +42,12 @@ namespace BlakieLibSharp
             {
                 //Console.WriteLine("Loading dpsprite with palette");
                 palettes = new int[paletteCount, 256];
-                for(int i = 0; i < paletteCount; i++)
-                    for(int j = 0; j < 256; j++)
+                for (int i = 0; i < paletteCount; i++)
+                {
+                    for (int j = 0; j < 256; j++)
                         palettes[i, j] = file.ReadInt32();
+                    palettes[i, 0] = 0; //set the first color to be transparent
+                }
             }
 
             for(int i = 0; i < spriteCount; i++)
