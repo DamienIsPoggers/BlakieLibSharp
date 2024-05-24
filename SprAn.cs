@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text;
+using System.Linq;
 
 namespace BlakieLibSharp
 {
@@ -48,6 +49,11 @@ namespace BlakieLibSharp
         public bool HasState(string name)
         {
             return states.ContainsKey(name);
+        }
+
+        public string[] GetAllStateNames()
+        {
+            return states.Keys.ToArray();
         }
 
         void LoadData(BinaryReader file)
