@@ -177,18 +177,29 @@ namespace BlakieLibSharp
 
         public class SprAnState
         {
-            public string name;
-            public byte frameCount;
-            public SprAnFrame[] frames;
+            public string name = "";
+            public byte frameCount = 0;
+            public SprAnFrame[] frames = new SprAnFrame[0];
+
+            public SprAnState Copy()
+            {
+                SprAnState rtrn = new SprAnState();
+                rtrn.name = name + "_Copy";
+                rtrn.frameCount = frameCount;
+                rtrn.frames = new SprAnFrame[frames.Length];
+                for (int i = 0; i < frames.Length; i++)
+                    rtrn.frames[i] = frames[i].Copy();
+                return rtrn;
+            }
         }
 
         public class SprAnFrame
         {
-            public byte uvCount;
-            public FrameUv[] uvs;
-            public ushort frameLength;
-            public byte colliderCount;
-            public RectCollider[] colliders;
+            public byte uvCount = 0;
+            public FrameUv[] uvs = new FrameUv[0];
+            public ushort frameLength = 0;
+            public byte colliderCount = 0;
+            public RectCollider[] colliders = new RectCollider[0];
 
             public SprAnFrame BlendFrames(SprAnFrame frameB, float time)
             {
@@ -207,6 +218,19 @@ namespace BlakieLibSharp
                     uv.scale = uvs[i].scale + (frameB.uvs[i].scale - uvs[i].scale) * time;
                     rtrn.uvs[i] = uv;
                 }
+                return rtrn;
+            }
+
+            public SprAnFrame Copy()
+            {
+                SprAnFrame rtrn = new SprAnFrame();
+                rtrn.uvCount = uvCount;
+                rtrn.uvs = new FrameUv[uvCount];
+                Array.Copy(uvs, rtrn.uvs, uvCount);
+                rtrn.frameLength = frameLength;
+                rtrn.colliderCount = colliderCount;
+                rtrn.colliders = new RectCollider[colliderCount];
+                Array.Copy(colliders, rtrn.colliders, colliderCount);
                 return rtrn;
             }
         }

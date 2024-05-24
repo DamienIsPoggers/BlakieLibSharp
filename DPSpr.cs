@@ -36,6 +36,7 @@ namespace BlakieLibSharp
             CompressionType compressed = (CompressionType)file.ReadByte();
 
             int[,] palettes = new int[0,0];
+            byte[,][] palettesBytes = new byte[0, 0][];
             if (!useBasePal)
                 file.ReadBytes(256 * sizeof(int) * paletteCount);
             else
@@ -48,6 +49,10 @@ namespace BlakieLibSharp
                         palettes[i, j] = file.ReadInt32();
                     palettes[i, 0] = 0; //set the first color to be transparent
                 }
+                palettesBytes = new byte[paletteCount, 256][];
+                for (int i = 0; i < paletteCount; i++)
+                    for (int j = 0; j < 256; j++)
+                        palettesBytes[i, j] = BitConverter.GetBytes(palettes[i, j]);
             }
 
             for(int i = 0; i < spriteCount; i++)
@@ -141,9 +146,12 @@ namespace BlakieLibSharp
                     byte[] compressedData = file.ReadBytes(sprite.size);
                     ZLib zlib = new ZLib();
                     zlib.Uncompress(data, out _, compressedData);
-                    if (useBasePal && !sprite.indexed)
+                    if (useBasePal && sprite.indexed)
+                    {
                         for (int i = 0; i < data.Length; i++)
-                            pixels.AddRange(BitConverter.GetBytes(palettes[sprite.palNum, data[i]]));
+                            pixels.AddRange(palettesBytes[sprite.palNum, data[i]]);
+                        sprite.indexed = false;
+                    }
                     else
                         pixels.AddRange(data);
 
