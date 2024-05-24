@@ -10,6 +10,13 @@ namespace BlakieLibSharp
     {
         Dictionary<string, SprAnState> states = new Dictionary<string, SprAnState>();
 
+#if DEBUG
+        public SprAn()
+        {
+
+        }
+#endif
+
         public SprAn(byte[] data)
         {
             BinaryReader file = new BinaryReader(new MemoryStream(data));
@@ -96,6 +103,54 @@ namespace BlakieLibSharp
                 states.Add(state.name, state);
             }
         }
+
+#if DEBUG
+        public void Save(string filePath)
+        {
+            List<byte> data = new List<byte>();
+            data.AddRange(Encoding.ASCII.GetBytes("SPRAN"));
+            data.AddRange(BitConverter.GetBytes(states.Count));
+            foreach(SprAnState state in states.Values)
+            {
+                data.Add(BitConverter.GetBytes(state.name.Length)[0]);
+                data.AddRange(Encoding.ASCII.GetBytes(state.name));
+                data.Add(state.frameCount);
+                foreach(SprAnFrame frame in state.frames)
+                {
+                    data.Add(frame.uvCount);
+                    foreach(FrameUv uv in frame.uvs)
+                    {
+                        data.Add(BitConverter.GetBytes(uv.textureName.Length)[0]);
+                        data.AddRange(Encoding.ASCII.GetBytes(uv.textureName));
+                        data.AddRange(BitConverter.GetBytes(uv.position.X));
+                        data.AddRange(BitConverter.GetBytes(uv.position.Y));
+                        data.AddRange(BitConverter.GetBytes(uv.rotation.X));
+                        data.AddRange(BitConverter.GetBytes(uv.rotation.Y));
+                        data.AddRange(BitConverter.GetBytes(uv.rotation.Z));
+                        data.AddRange(BitConverter.GetBytes(uv.scale.X));
+                        data.AddRange(BitConverter.GetBytes(uv.scale.Y));
+                        data.AddRange(BitConverter.GetBytes(uv.uv.X));
+                        data.AddRange(BitConverter.GetBytes(uv.uv.Y));
+                        data.AddRange(BitConverter.GetBytes(uv.uv.Z));
+                        data.AddRange(BitConverter.GetBytes(uv.uv.W));
+                    }
+                    data.AddRange(BitConverter.GetBytes(frame.frameLength));
+                    data.Add(frame.colliderCount);
+                    foreach(RectCollider collider in frame.colliders)
+                    {
+                        data.AddRange(BitConverter.GetBytes((int)collider.colliderType));
+                        data.AddRange(BitConverter.GetBytes(collider.x));
+                        data.AddRange(BitConverter.GetBytes(collider.y));
+                        data.AddRange(BitConverter.GetBytes(collider.width));
+                        data.AddRange(BitConverter.GetBytes(collider.height));
+                    }
+                }
+            }
+            BinaryWriter file = new BinaryWriter(File.OpenWrite(filePath));
+            file.Write(data.ToArray());
+            file.Close();
+        }
+#endif
 
         public class SprAnState
         {
