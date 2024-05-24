@@ -163,6 +163,16 @@ namespace BlakieLibSharp
             states.Remove(oldName);
             states.Add(newName, state);
         }
+
+        public void AddState(SprAnState state)
+        {
+            states.TryAdd(state.name, state);
+        }
+
+        public void RemoveState(string state)
+        {
+            states.Remove(state);
+        }
 #endif
 
         public class SprAnState
