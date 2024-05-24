@@ -156,6 +156,13 @@ namespace BlakieLibSharp
             file.Write(data.ToArray());
             file.Close();
         }
+
+        public void ReKeyState(string oldName, string newName)
+        {
+            SprAnState state = states[oldName];
+            states.Remove(oldName);
+            states.Add(newName, state);
+        }
 #endif
 
         public class SprAnState
