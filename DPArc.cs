@@ -64,8 +64,6 @@ namespace BlakieLibSharp
 
         public void Dispose()
         {
-            foreach (ArchiveFile file in files.Values)
-                file.Dispose();
             files.Clear();
             GC.Collect();
             GC.SuppressFinalize(this);
