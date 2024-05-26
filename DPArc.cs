@@ -64,6 +64,8 @@ namespace BlakieLibSharp
 
         public void Dispose()
         {
+            foreach (ArchiveFile file in files.Values)
+                file.Dispose();
             files.Clear();
             GC.Collect();
             GC.SuppressFinalize(this);
@@ -71,7 +73,7 @@ namespace BlakieLibSharp
     }
 
     [Serializable]
-    public class ArchiveFile
+    public class ArchiveFile : IDisposable
     {
         public string fileName;
         public int dataSize;
@@ -80,6 +82,12 @@ namespace BlakieLibSharp
         public string DataAsString()
         {
             return Encoding.ASCII.GetString(data);
+        }
+
+        public void Dispose()
+        {
+            data = null;
+            GC.SuppressFinalize(this);
         }
     }
 }
