@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace BlakieLibSharp
 {
-    public class SprAn
+    public class SprAn : IDisposable
     {
         Dictionary<string, SprAnState> states = new Dictionary<string, SprAnState>();
 
@@ -20,9 +20,8 @@ namespace BlakieLibSharp
 
         public SprAn(byte[] data)
         {
-            BinaryReader file = new BinaryReader(new MemoryStream(data));
-            LoadData(file);
-            file.Close();
+            using (BinaryReader file = new BinaryReader(new MemoryStream(data)))
+                LoadData(file);
         }
 
         public SprAn(BinaryReader file)
@@ -174,6 +173,12 @@ namespace BlakieLibSharp
             states.Remove(state);
         }
 #endif
+
+        public void Dispose()
+        {
+            states.Clear();
+            GC.SuppressFinalize(this);
+        }
 
         public class SprAnState
         {

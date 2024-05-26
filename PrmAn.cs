@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BlakieLibSharp
 {
-    public class PrmAn
+    public class PrmAn : IDisposable
     {
         public Dictionary<string, Frame> frames = new Dictionary<string, Frame>();
         public Dictionary<int, Texture> textures = new Dictionary<int, Texture>();
@@ -24,9 +24,8 @@ namespace BlakieLibSharp
 
         public PrmAn(byte[] data)
         {
-            BinaryReader file = new BinaryReader(new MemoryStream(data));
-            ParseData(file);
-            file.Close();
+            using (BinaryReader file = new BinaryReader(new MemoryStream(data)))
+                ParseData(file);
         }
 
         private void ParseData(BinaryReader file)
@@ -296,6 +295,14 @@ namespace BlakieLibSharp
                 textures.TryAdd(tex.Key, tex.Value);
             foreach (KeyValuePair<string, Animation> anim in other.animations)
                 animations.TryAdd(anim.Key, anim.Value);
+        }
+
+        public void Dispose()
+        {
+            frames.Clear();
+            textures.Clear();
+            animations.Clear();
+            GC.SuppressFinalize();
         }
 
         public struct Frame

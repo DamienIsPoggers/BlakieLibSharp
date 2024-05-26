@@ -7,7 +7,7 @@ using ZLibDotNet;
 
 namespace BlakieLibSharp
 {
-    public class DPSpr
+    public class DPSpr : IDisposable
     {
         public Dictionary<string, Sprite> sprites { get; private set; } = new Dictionary<string, Sprite>();
 
@@ -18,9 +18,8 @@ namespace BlakieLibSharp
 
         public DPSpr(byte[] data, bool useBasePal = false)
         {
-            BinaryReader file = new BinaryReader(new MemoryStream(data));
-            ParseData(file, useBasePal);
-            file.Close();
+            using (BinaryReader file = new BinaryReader(new MemoryStream(data)))
+                ParseData(file, useBasePal);
         }
 
         void ParseData(BinaryReader file, bool useBasePal)
@@ -190,6 +189,12 @@ namespace BlakieLibSharp
             Array.Clear(sprites[sprite].imageData);
             sprites[sprite].imageData = null;
             sprites[sprite].glTexId = glId;
+        }
+
+        public void Dispose()
+        {
+            sprites.Clear();
+            GC.SuppressFinalize(this);
         }
 
         public class Sprite

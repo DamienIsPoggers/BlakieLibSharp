@@ -12,9 +12,8 @@ namespace BlakieLibSharp
         
         public DPArc(byte[] data)
         {
-            BinaryReader file = new BinaryReader(new MemoryStream(data));
-            ParseData(file);
-            file.Close();
+            using (BinaryReader file = new BinaryReader(new MemoryStream(data)))
+                ParseData(file);
         }
 
         public DPArc(BinaryReader data)
@@ -67,6 +66,7 @@ namespace BlakieLibSharp
         {
             files.Clear();
             GC.Collect();
+            GC.SuppressFinalize(this);
         }
     }
 
