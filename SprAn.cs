@@ -237,11 +237,13 @@ namespace BlakieLibSharp
 
         public struct FrameUv
         {
-            public string textureName;
-            public Vector2 position;
-            public Vector3 rotation;
-            public Vector2 scale;
-            public Vector4 uv;
+            public string textureName = "";
+            public Vector2 position = Vector2.Zero;
+            public Vector3 rotation = Vector3.Zero;
+            public Vector2 scale = Vector2.One;
+            public Vector4 uv = Vector4.Zero;
+
+            public FrameUv() { }
         }
     }
 }
