@@ -72,7 +72,17 @@ namespace BlakieLibSharp
             return true;
         }
 
-        
+        public RectCollider Flip()
+        {
+            return new RectCollider()
+            {
+                colliderType = colliderType,
+                x = -x,
+                y = y,
+                width = -width,
+                height = height
+            };
+        }
 
         public static bool ColliderTypeCheck(ColliderType checker, ColliderType checking)
         {
