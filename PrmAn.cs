@@ -302,7 +302,7 @@ namespace BlakieLibSharp
             frames.Clear();
             textures.Clear();
             animations.Clear();
-            GC.SuppressFinalize();
+            GC.SuppressFinalize(this);
         }
 
         public struct Frame
