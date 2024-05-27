@@ -76,11 +76,11 @@ namespace BlakieLibSharp
         {
             return new RectCollider()
             {
-                colliderType = colliderType,
-                x = -x,
+                x = -(x + width),
                 y = y,
-                width = -width,
-                height = height
+                width = width,
+                height = height,
+                colliderType = colliderType
             };
         }
 
@@ -91,11 +91,13 @@ namespace BlakieLibSharp
                 default:
                     return false;
                 case ColliderType.Push:
-                    return checking == ColliderType.Push;
+                    return checking == ColliderType.Push || checking == ColliderType.Grab;
                 case ColliderType.Hurt:
                     return checking == ColliderType.Hit;
                 case ColliderType.Hit:
                     return checking == ColliderType.Hurt;
+                case ColliderType.Grab:
+                    return checking == ColliderType.Push;
             }
         }
 
