@@ -88,6 +88,9 @@ namespace BlakieLibSharp
                             case 0x22:
                                 layer.blendUv = false;
                                 break;
+                            case 0x23:
+                                layer.allowBlending = false;
+                                break;
                             case 0x30:
                                 layer.primitiveType = (PrimitiveType)file.ReadByte();
                                 break;
@@ -198,6 +201,8 @@ namespace BlakieLibSharp
                         file.Add(0x21);
                     if (!layer.blendUv)
                         file.Add(0x22);
+                    if (!layer.allowBlending)
+                        file.Add(0x23);
                     file.Add(0x30);
                     file.Add((byte)layer.primitiveType);
                     file.Add(0x31);
@@ -354,6 +359,7 @@ namespace BlakieLibSharp
             public bool additive = false;
             public bool drawIn2d = false;
             public bool blendUv = true;
+            public bool allowBlending = true;
             public PrimitiveType primitiveType = PrimitiveType.Plane;
             public int texId = 0;
 
@@ -361,6 +367,9 @@ namespace BlakieLibSharp
 
             public Layer Blend(Layer layerB, float time)
             {
+                if (!allowBlending)
+                    return this;
+
                 Layer rtrn = new Layer();
 
                 rtrn.position = this.position + (layerB.position - this.position) * time;
