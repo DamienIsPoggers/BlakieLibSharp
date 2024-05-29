@@ -254,6 +254,16 @@ namespace BlakieLibSharp
             return textures.ContainsKey(id) ? textures[id] : null;
         }
 
+        public Frame GetFrame(string frame)
+        {
+            return frames.ContainsKey(frame) ? frames[frame] : new Frame();
+        }
+
+        public Animation GetAnim(string anim)
+        {
+            return animations.ContainsKey(anim) ? animations[anim] : null;
+        }
+
         public Frame BlendFrames(string frameA, string frameB, float time)
         {
             Frame a, b, rtrn = new Frame();
@@ -289,10 +299,23 @@ namespace BlakieLibSharp
 
         public void Combine(PrmAn other)
         {
-            foreach(KeyValuePair<string, Frame> frame in other.frames)
-                frames.TryAdd(frame.Key, frame.Value);
+            Dictionary<int, int> texIdUpdates = new Dictionary<int, int>();
             foreach (KeyValuePair<int, Texture> tex in other.textures)
-                textures.TryAdd(tex.Key, tex.Value);
+                if(!textures.TryAdd(tex.Key, tex.Value))
+                {
+                    //you ready for the most stupid ass fucking thing ever to ensure unique keys
+                    int oldId = tex.Value.id;
+                    tex.Value.id = DateTime.Now.GetHashCode();
+                    textures.TryAdd(tex.Value.id, tex.Value);
+                    texIdUpdates.Add(oldId, tex.Value.id);
+                }
+            foreach (KeyValuePair<string, Frame> frame in other.frames)
+            {
+                for (int i = 0; i < frame.Value.layerCount; i++)
+                    if (texIdUpdates.ContainsKey(frame.Value.layers[i].texId))
+                        frame.Value.layers[i].texId = texIdUpdates[frame.Value.layers[i].texId];
+                frames.TryAdd(frame.Key, frame.Value);
+            }
             foreach (KeyValuePair<string, Animation> anim in other.animations)
                 animations.TryAdd(anim.Key, anim.Value);
         }
