@@ -62,6 +62,15 @@ namespace BlakieLibSharp
             return null;
         }
 
+        public ArchiveFile[] GetFolder(string folder)
+        {
+            List<ArchiveFile> rtrn = new List<ArchiveFile>();
+            foreach (ArchiveFile file in files.Values)
+                if (file.fileName.StartsWith(folder))
+                    rtrn.Add(file);
+            return rtrn.ToArray();
+        }
+
         public void Dispose()
         {
             files.Clear();
