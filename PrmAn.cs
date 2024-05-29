@@ -201,7 +201,7 @@ namespace BlakieLibSharp
                     if (layer.palNum >= 0)
                     {
                         file.Add(0x12);
-                        file.Add(layer.palNum);
+                        file.Add((byte)layer.palNum);
                     }
                     if (layer.additive)
                         file.Add(0x20);
