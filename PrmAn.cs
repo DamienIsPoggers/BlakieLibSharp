@@ -79,6 +79,9 @@ namespace BlakieLibSharp
                             case 0x11:
                                 layer.colAdd = BitConverter.GetBytes(file.ReadInt32());
                                 break;
+                            case 0x12:
+                                layer.palNum = file.ReadSByte();
+                                break;
                             case 0x20:
                                 layer.additive = true;
                                 break;
@@ -194,6 +197,11 @@ namespace BlakieLibSharp
                     {
                         file.Add(0x11);
                         file.AddRange(layer.colAdd);
+                    }
+                    if (layer.palNum >= 0)
+                    {
+                        file.Add(0x12);
+                        file.Add(layer.palNum);
                     }
                     if (layer.additive)
                         file.Add(0x20);
@@ -356,6 +364,7 @@ namespace BlakieLibSharp
             public float radius = 0.0f;
             public byte[] colMult = new byte[] { 255, 255, 255, 255 };
             public byte[] colAdd = new byte[] { 0, 0, 0, 0 };
+            public sbyte palNum = -1;
             public bool additive = false;
             public bool drawIn2d = false;
             public bool blendUv = true;
@@ -388,6 +397,7 @@ namespace BlakieLibSharp
                 rtrn.colAdd[1] = (byte)(((this.colAdd[1] / 255) + ((layerB.colAdd[1] / 255) - (this.colAdd[1] / 255)) * time) * 255);
                 rtrn.colAdd[2] = (byte)(((this.colAdd[2] / 255) + ((layerB.colAdd[2] / 255) - (this.colAdd[2] / 255)) * time) * 255);
                 rtrn.colAdd[3] = (byte)(((this.colAdd[3] / 255) + ((layerB.colAdd[3] / 255) - (this.colAdd[3] / 255)) * time) * 255);
+                rtrn.palNum = palNum;
                 rtrn.additive = additive;
                 rtrn.drawIn2d = drawIn2d;
                 rtrn.primitiveType = primitiveType;
