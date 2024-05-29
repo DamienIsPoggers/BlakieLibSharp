@@ -229,7 +229,7 @@ namespace BlakieLibSharp
                 file.AddRange(BitConverter.GetBytes(anim.frameCount));
                 for(int i = 0; i < anim.frameCount; i++)
                 {
-                    file.Add(BitConverter.GetBytes(anim.frames[i][0])[0]);
+                    file.Add(BitConverter.GetBytes(anim.frames[i].Length)[0]);
                     file.AddRange(Encoding.ASCII.GetBytes(anim.frames[i]));
                     file.AddRange(BitConverter.GetBytes(anim.frameTimes[i]));
                 }
