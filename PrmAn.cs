@@ -406,10 +406,10 @@ namespace BlakieLibSharp
 
         public class Animation
         {
-            public string name;
-            public int frameCount;
-            public string[] frames;
-            public int[] frameTimes;
+            public string name = "";
+            public int frameCount = 0;
+            public string[] frames = new string[0];
+            public int[] frameTimes = new int[0];
         }
     }
 }
