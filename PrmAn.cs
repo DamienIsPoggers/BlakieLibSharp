@@ -85,6 +85,9 @@ namespace BlakieLibSharp
                             case 0x21:
                                 layer.drawIn2d = true;
                                 break;
+                            case 0x22:
+                                layer.blendUv = false;
+                                break;
                             case 0x30:
                                 layer.primitiveType = (PrimitiveType)file.ReadByte();
                                 break;
@@ -193,6 +196,8 @@ namespace BlakieLibSharp
                         file.Add(0x20);
                     if (layer.drawIn2d)
                         file.Add(0x21);
+                    if (!layer.blendUv)
+                        file.Add(0x22);
                     file.Add(0x30);
                     file.Add((byte)layer.primitiveType);
                     file.Add(0x31);
@@ -348,6 +353,7 @@ namespace BlakieLibSharp
             public byte[] colAdd = new byte[] { 0, 0, 0, 0 };
             public bool additive = false;
             public bool drawIn2d = false;
+            public bool blendUv = true;
             public PrimitiveType primitiveType = PrimitiveType.Plane;
             public int texId = 0;
 
@@ -360,7 +366,10 @@ namespace BlakieLibSharp
                 rtrn.position = this.position + (layerB.position - this.position) * time;
                 rtrn.rotation = this.rotation + (layerB.rotation - this.rotation) * time;
                 rtrn.scale = this.scale + (layerB.scale - this.scale) * time;
-                rtrn.uv = this.uv + (layerB.uv - this.uv) * time;
+                if (blendUv)
+                    rtrn.uv = this.uv + (layerB.uv - this.uv) * time;
+                else
+                    rtrn.uv = this.uv;
                 rtrn.radius = this.radius + (layerB.radius - this.radius) * time;
                 rtrn.colMult[0] = (byte)(((this.colMult[0] / 255) + ((layerB.colMult[0] / 255) - (this.colMult[0] / 255)) * time) * 255);
                 rtrn.colMult[1] = (byte)(((this.colMult[1] / 255) + ((layerB.colMult[1] / 255) - (this.colMult[1] / 255)) * time) * 255);
