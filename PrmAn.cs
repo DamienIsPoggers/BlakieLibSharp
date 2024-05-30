@@ -389,14 +389,14 @@ namespace BlakieLibSharp
                 else
                     rtrn.uv = this.uv;
                 rtrn.radius = this.radius + (layerB.radius - this.radius) * time;
-                rtrn.colMult[0] = (byte)(((this.colMult[0] / 255) + ((layerB.colMult[0] / 255) - (this.colMult[0] / 255)) * time) * 255);
-                rtrn.colMult[1] = (byte)(((this.colMult[1] / 255) + ((layerB.colMult[1] / 255) - (this.colMult[1] / 255)) * time) * 255);
-                rtrn.colMult[2] = (byte)(((this.colMult[2] / 255) + ((layerB.colMult[2] / 255) - (this.colMult[2] / 255)) * time) * 255);
-                rtrn.colMult[3] = (byte)(((this.colMult[3] / 255) + ((layerB.colMult[3] / 255) - (this.colMult[3] / 255)) * time) * 255);
-                rtrn.colAdd[0] = (byte)(((this.colAdd[0] / 255) + ((layerB.colAdd[0] / 255) - (this.colAdd[0] / 255)) * time) * 255);
-                rtrn.colAdd[1] = (byte)(((this.colAdd[1] / 255) + ((layerB.colAdd[1] / 255) - (this.colAdd[1] / 255)) * time) * 255);
-                rtrn.colAdd[2] = (byte)(((this.colAdd[2] / 255) + ((layerB.colAdd[2] / 255) - (this.colAdd[2] / 255)) * time) * 255);
-                rtrn.colAdd[3] = (byte)(((this.colAdd[3] / 255) + ((layerB.colAdd[3] / 255) - (this.colAdd[3] / 255)) * time) * 255);
+                rtrn.colMult[0] = (byte)(this.colMult[0] + (layerB.colMult[0] - this.colMult[0]) * time);
+                rtrn.colMult[1] = (byte)(this.colMult[1] + (layerB.colMult[1] - this.colMult[3]) * time);
+                rtrn.colMult[2] = (byte)(this.colMult[2] + (layerB.colMult[2] - this.colMult[3]) * time);
+                rtrn.colMult[3] = (byte)(this.colMult[3] + (layerB.colMult[3] - this.colMult[3]) * time);
+                rtrn.colAdd[0] = (byte)(this.colAdd[0] + (layerB.colAdd[0] - this.colAdd[0]) * time);
+                rtrn.colAdd[1] = (byte)(this.colAdd[1] + (layerB.colAdd[1] - this.colAdd[1]) * time);
+                rtrn.colAdd[2] = (byte)(this.colAdd[2] + (layerB.colAdd[2] - this.colAdd[2]) * time);
+                rtrn.colAdd[3] = (byte)(this.colAdd[3] + (layerB.colAdd[3] - this.colAdd[3]) * time);
                 rtrn.palNum = palNum;
                 rtrn.additive = additive;
                 rtrn.drawIn2d = drawIn2d;
