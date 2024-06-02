@@ -94,6 +94,9 @@ namespace BlakieLibSharp
                             case 0x23:
                                 layer.allowBlending = false;
                                 break;
+                            case 0x24:
+                                layer.blendTransform = false;
+                                break;
                             case 0x30:
                                 layer.primitiveType = (PrimitiveType)file.ReadByte();
                                 break;
@@ -207,6 +210,8 @@ namespace BlakieLibSharp
                         file.Add(0x20);
                     if (layer.drawIn2d)
                         file.Add(0x21);
+                    if (!layer.blendTransform)
+                        file.Add(0x24);
                     if (!layer.blendUv)
                         file.Add(0x22);
                     if (!layer.allowBlending)
@@ -294,9 +299,12 @@ namespace BlakieLibSharp
             else
                 return a;
 
-            if (time == 0.0f)
+            if (frameA == frameB)
                 return a;
-            else if (time == 1.0f)
+
+            if (time <= 0.0f)
+                return a;
+            else if (time >= 1.0f)
                 return b;
 
             rtrn.layerCount = a.layerCount;
@@ -353,6 +361,25 @@ namespace BlakieLibSharp
             public Layer[] layers = new Layer[0];
 
             public Frame() { }
+
+            public Frame Copy()
+            {
+                Frame rtrn = new Frame();
+                rtrn.name = name + "_copy";
+                rtrn.layerCount = layerCount;
+                rtrn.layers = new Layer[layerCount];
+                int i = 0;
+                foreach(Layer layer in layers)
+                {
+                    rtrn.layers[i] = layer;
+                    rtrn.layers[i].colMult = new byte[4];
+                    Array.Copy(layer.colMult, rtrn.layers[i].colMult, 4);
+                    rtrn.layers[i].colAdd = new byte[4];
+                    Array.Copy(layer.colAdd, rtrn.layers[i].colAdd, 4);
+                    i++;
+                }
+                return rtrn;
+            }
         }
 
         public struct Layer
@@ -368,6 +395,7 @@ namespace BlakieLibSharp
             public bool additive = false;
             public bool drawIn2d = false;
             public bool blendUv = true;
+            public bool blendTransform = true;
             public bool allowBlending = true;
             public PrimitiveType primitiveType = PrimitiveType.Plane;
             public int texId = 0;
@@ -379,24 +407,37 @@ namespace BlakieLibSharp
                 if (!allowBlending)
                     return this;
 
+                if (time <= 0.0f)
+                    return this;
+                else if (time >= 1.0f)
+                    return layerB;
                 Layer rtrn = new Layer();
 
-                rtrn.position = this.position + (layerB.position - this.position) * time;
-                rtrn.rotation = this.rotation + (layerB.rotation - this.rotation) * time;
-                rtrn.scale = this.scale + (layerB.scale - this.scale) * time;
+                if (blendTransform)
+                {
+                    rtrn.position = this.position + (layerB.position - this.position) * time;
+                    rtrn.rotation = this.rotation + (layerB.rotation - this.rotation) * time;
+                    rtrn.scale = this.scale + (layerB.scale - this.scale) * time;
+                }
+                else
+                {
+                    rtrn.position = this.position;
+                    rtrn.rotation = this.rotation;
+                    rtrn.scale = this.scale;
+                }
                 if (blendUv)
                     rtrn.uv = this.uv + (layerB.uv - this.uv) * time;
                 else
                     rtrn.uv = this.uv;
                 rtrn.radius = this.radius + (layerB.radius - this.radius) * time;
-                rtrn.colMult[0] = (byte)(this.colMult[0] + (layerB.colMult[0] - this.colMult[0]) * time);
-                rtrn.colMult[1] = (byte)(this.colMult[1] + (layerB.colMult[1] - this.colMult[3]) * time);
-                rtrn.colMult[2] = (byte)(this.colMult[2] + (layerB.colMult[2] - this.colMult[3]) * time);
-                rtrn.colMult[3] = (byte)(this.colMult[3] + (layerB.colMult[3] - this.colMult[3]) * time);
-                rtrn.colAdd[0] = (byte)(this.colAdd[0] + (layerB.colAdd[0] - this.colAdd[0]) * time);
-                rtrn.colAdd[1] = (byte)(this.colAdd[1] + (layerB.colAdd[1] - this.colAdd[1]) * time);
-                rtrn.colAdd[2] = (byte)(this.colAdd[2] + (layerB.colAdd[2] - this.colAdd[2]) * time);
-                rtrn.colAdd[3] = (byte)(this.colAdd[3] + (layerB.colAdd[3] - this.colAdd[3]) * time);
+                rtrn.colMult[0] = LerpByte(this.colMult[0], layerB.colMult[0], time);
+                rtrn.colMult[1] = LerpByte(this.colMult[1], layerB.colMult[1], time);
+                rtrn.colMult[2] = LerpByte(this.colMult[2], layerB.colMult[2], time);
+                rtrn.colMult[3] = LerpByte(this.colMult[3], layerB.colMult[3], time);
+                rtrn.colAdd[0] = LerpByte(this.colAdd[0], layerB.colAdd[0], time);
+                rtrn.colAdd[1] = LerpByte(this.colAdd[1], layerB.colAdd[1], time);
+                rtrn.colAdd[2] = LerpByte(this.colAdd[2], layerB.colAdd[2], time);
+                rtrn.colAdd[3] = LerpByte(this.colAdd[3], layerB.colAdd[3], time);
                 rtrn.palNum = palNum;
                 rtrn.additive = additive;
                 rtrn.drawIn2d = drawIn2d;
@@ -404,6 +445,13 @@ namespace BlakieLibSharp
                 rtrn.texId = texId;
 
                 return rtrn;
+            }
+
+            byte LerpByte(byte byteA, byte byteB, float time)
+            {
+                int a = byteA;
+                int b = byteB;
+                return (byte)(a + (b - a) * time);
             }
         }
 
