@@ -221,6 +221,7 @@ namespace BlakieLibSharp
                     uv.position = uvs[i].position + (frameB.uvs[i].position - uvs[i].position) * time;
                     uv.rotation = uvs[i].rotation + (frameB.uvs[i].rotation - uvs[i].rotation) * time;
                     uv.scale = uvs[i].scale + (frameB.uvs[i].scale - uvs[i].scale) * time;
+                    uv.uv = uvs[i].uv;
                     rtrn.uvs[i] = uv;
                 }
                 return rtrn;
